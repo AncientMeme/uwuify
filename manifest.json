@@ -5,5 +5,11 @@
     "version": "1.0",
     "action": {
         "default_popup": "meow.html"
-    }
+    },
+    "content_scripts": [
+        {
+            "js": ["dom-scraping/scraper.js"],
+            "matches": ["https://developer.chrome.com/docs/*"]
+        }
+    ]
 }
