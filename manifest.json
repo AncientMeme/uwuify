@@ -9,7 +9,7 @@
     "content_scripts": [
         {
             "js": ["dom-scraping/scraper.js"],
-            "matches": ["https://developer.chrome.com/docs/*"]
+            "matches": ["<all_urls>"]
         }
     ]
 }
