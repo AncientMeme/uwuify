@@ -45,23 +45,28 @@ def hello_world():
 
 @app.route("/echoJson", methods=['GET', 'POST'])
 def echoJson():
-    # data = request.json
+    ret = {}
+    data = request.json
     # jsonifiedContent = jsonify(data)
-    # app.logger.info('body content: ' + json.dumps(data))
-    # urls = data['urls']c
-    urls = ['https://i.ytimg.com/vi/L45Ua8weKqs/hqdefault.jpg?sqp=-oaymwEcCOADEI4CSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLC9XUQUbDSSoNC2SwmU10yn5tbCLQ']
+    app.logger.info('body content: ' + json.dumps(data))
+    urls = data['urls']
+
+    # urls = ['https://i.ytimg.com/vi/L45Ua8weKqs/hqdefault.jpg?sqp=-oaymwEcCOADEI4CSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLC9XUQUbDSSoNC2SwmU10yn5tbCLQ']
     img_paths = merger.downloadImgs(urls)
     for i in range(len(img_paths)):
         img_paths[i] = 'https://wenjunblog.xyz/' + img_paths[i]
+        ret[urls[i]] = img_paths[i]
+
     content = {}
-    content['urls'] = img_paths
+    # content['urls'] = img_paths
+    content['urls'] = ret
     jsonifiedContent = jsonify(content)
     return jsonifiedContent
 
 @app.route("/echo", methods=['GET', 'POST'])
 def echo():
-    app.logger.info('text is: ' + request.args.get('text', ''))
-    return "You said: " + request.args.get('text', '')
+    data = request.json
+    return data
 
 
 def random_image():

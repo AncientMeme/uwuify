@@ -68,6 +68,8 @@ def overlayFlow(img, img_overlay_rgba):
     # Save result
     # Image.fromarray(img_result).save("img_result3.jpg")
     global incremental
+    if(incremental > 200):
+        incremental = 0
     img_name = str(incremental) + ".jpg"
     incremental += 1
     savePath = "static/" + img_name
@@ -89,13 +91,16 @@ def downloadImgs(urls):
     script_dir = os.path.dirname(__file__)
     # url -->content --> wrap it for BytesIO --> open as Image and then convert
     for url in urls:
-        image = downloadImg(url)
-        cat_url = findRandomCat()
-        abs_file_path = os.path.join(script_dir, cat_url)
-        random_cat = np.array(Image.open(abs_file_path))
-        file_path = overlayFlow(image,random_cat)
-        file_paths.append(file_path)
+        if(url == None or len(url) == 0):
+            file_paths.append('')
+        else:
+            image = downloadImg(url)
+            cat_url = findRandomCat()
+            abs_file_path = os.path.join(script_dir, cat_url)
+            random_cat = np.array(Image.open(abs_file_path))
+            file_path = overlayFlow(image,random_cat)
+            file_paths.append(file_path)
     return file_paths
 
-if __name__ == '__main__':
-    downloadImgs(['https://i.ytimg.com/vi/L45Ua8weKqs/hqdefault.jpg?sqp=-oaymwEcCOADEI4CSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLC9XUQUbDSSoNC2SwmU10yn5tbCLQ'])
+# if __name__ == '__main__':
+#     downloadImgs(['https://i.ytimg.com/vi/L45Ua8weKqs/hqdefault.jpg?sqp=-oaymwEcCOADEI4CSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLC9XUQUbDSSoNC2SwmU10yn5tbCLQ'])
