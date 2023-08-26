@@ -2,6 +2,7 @@
 var isActive = true
 var updater = null
 var textCache = []
+var imageCache = []
 
 /* Get user settings */
 chrome.storage.sync.get(["active"]).then((data)=>{
@@ -86,40 +87,71 @@ function isImage(element) {
     if(style.display === 'none' || element.width < 128 || element.height < 128) {
         return false
     }
+    // Disregard if the image has no src tag
+    if (!element.getAttribute('src') || element.getAttribute('src') === "") {
+        return false
+    }
     return element.tagName == "IMG"
+}
+
+function isNewImage(element) {
+    return element.classList.contains("requested") == false
 }
 
 function createImageJson(elements) {
     var obj = new Object()
+    console.log(elements)
     obj.urls = []
     for (element of elements) {
-        obj.urls.push(element.src)
+        if (!element.classList.contains("requested")) {
+            obj.urls.push(element.src)
+        }
     }
     return JSON.stringify(obj)
 }
 
 function postImages(elements) {
+    // send packets for new images
     var request = new XMLHttpRequest()
     request.open("POST", "https://wenjunblog.xyz/echoJson")
     request.setRequestHeader("Content-Type", "application/json")
-    var data = createImageJson(elements)
-    console.log(data)
+
+    let newImages = Array.from(elements).filter(isNewImage)
+    let data = createImageJson(newImages)
     request.send(data)
 
+    // Receive response
     request.onreadystatechange = function () {
-        console.log("Got packet")
         if (request.readyState === 4 && request.status === 200) {
-            var json = JSON.parse(request.response)
-            console.log(json)
+            let json = JSON.parse(request.response)
+            console.log("Got packet", json)
+            mapImages(json)
         }
     };
 }
 
-function changeImages() {
-    let imageElements = getImageElements()
-    //postImages(imageElements)
+function mapImages(json) {
+    let images = getImageElements()
+    for (image of images) {
+        if (!element.classList.contains("requested") && image.getAttribute('src') in json.urls) {
+            let newImage = json.urls[image.getAttribute('src')]
+            imageCache.push([image, image.getAttribute('src'), newImage])
+            element.classList.add("requested")
+        }
+    }
+    console.log("Image Cache:",imageCache)
 }
 
+
+function changeImages(elements, json) {
+    var images = json.urls // Dict
+    console.log(json.urls)
+    for (let i = 0; i < elements.length; ++i) {
+        elements[i].src = images[i]
+        elements[i].srcset = images[i]
+        elements[i].classList.add("has-cat")
+    }
+}
 
 /*
  * Track if the updater is active
@@ -138,6 +170,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
 });
 
-setTimeout(() => {
-    changeImages()
-}, 2 * 1000)
+setInterval(() => {
+    let imageElements = getImageElements()
+    postImages(imageElements)
+}, 3 * 1000)
