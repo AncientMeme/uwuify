@@ -20,6 +20,11 @@ function getTextElements() {
 }
 
 function containText(element) {
+    const style = getComputedStyle(element);
+    // Disregard hidden elements and images that are too small.
+    if(style.display === 'none' || element.width < 128 || element.height < 128) {
+        return false
+    }
     // check if the element has a text node, if so, make sure it's not just whitespace.
     return Array.from(element.childNodes).find(node=>node.nodeType===3 && node.textContent.trim().length>1);
 }
@@ -31,7 +36,7 @@ function changeContent() {
         for (element of textElements) {
             if (!element.classList.contains("UwU")) {
                 textCache.push([element, element.textContent])
-                element.textContent = "UwU " + element.textContent
+                element.innerText = uwuifyText(element.innerText) 
                 element.classList.add("UwU")
             }
         }
@@ -47,6 +52,21 @@ function restoreContent() {
             textCache[i][0].textContent = textCache[i][1]
             textCache[i][0].classList.remove("UwU")
         }
+    }
+}
+
+function uwuifyText(text) 
+{
+    if (text) {
+        text = text.replace(/(?:r|l)/g, "w");
+        text = text.replace(/(?:R|L)/g, "W");
+        text = text.replace(/n([aeiou])/g, "ny$1");
+        text = text.replace(/N([aeiou])/g, "Ny$1");
+        text = text.replace(/th/g, "f");
+        text = text.replace(/ove/g, "uv");
+        text = text.replace(/!+/g, " " + "❤️".repeat(Math.floor(Math.random() * 3) + 1) + " ");
+        text = text.replace(/\?+/g, " " + "🌸".repeat(Math.floor(Math.random() * 3) + 1) + " ");
+        return text;
     }
 }
 
