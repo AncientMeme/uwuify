@@ -1,3 +1,13 @@
+/* Keep track of data */
+var isActive = true
+var textCache = []
+// Update Every 5 seconds
+var updater = setInterval(() => {
+    textElements = getTextElements()
+    changeContent(textElements)
+}, 5 * 1000)
+
+
 /*
  * Grabs text containers and UwUify the content
  */
@@ -12,16 +22,22 @@ function containText(element) {
     return Array.from(element.childNodes).find(node=>node.nodeType===3 && node.textContent.trim().length>1);
 }
 
-function changeTextElements() {
-    let textElements = getTextElements()
-    changeContent(textElements)
-}
-
 function changeContent(textElements) {
     for (element of textElements) {
         if (!element.classList.contains("UwU")) {
+            textCache.push([element, element.textContent])
             element.textContent = "UwU " + element.textContent
             element.classList.add("UwU")
+        }
+    }
+}
+
+function restoreContent() {
+    for (let i = 0; i < textCache.length; ++i) {
+        console.log("Restore Text")
+        if (textCache[i][0].classList.contains("UwU")) {
+            textCache[i][0].textContent = textCache[i][1]
+            textCache[i][0].classList.remove("UwU")
         }
     }
 }
@@ -45,24 +61,60 @@ function isImage(element) {
     return element.tagName == "IMG"
 }
 
-
-function postImages() {
-
+function createImageJson(elements) {
+    var obj = new Object()
+    obj.urls = []
+    for (element of elements) {
+        obj.urls.push(element.src)
+    }
+    return JSON.stringify(obj)
 }
 
+
+function postImages(elements) {
+    var request = new XMLHttpRequest()
+    request.open("POST", "//8.222.181.202:9999/echoJson")
+    request.setRequestHeader("Content-Type", "application/json")
+    var data = createImageJson(elements)
+    console.log(data)
+    request.send(data)
+
+    request.onreadystatechange = function () {
+        if (request.readyState === 4 && request.status === 200) {
+            // var json = JSON.parse(request.response);
+            console.log(request.response);
+        }
+    };
+}
 
 function changeImages() {
     let imageElements = getImageElements()
-    console.log(imageElements)
+    postImages(imageElements)
 }
+
 
 /*
  * Track if the updater is active
  */
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if(request) {
+        if (request.msg == "toggled") {
+            console.log("uwu toggled:", request.data)
+            isActive = request.data
 
+            if (isActive) {
+                updater = setInterval(() => {
+                    textElements = getTextElements()
+                    changeContent(textElements)
+                }, 5 * 1000)
+            } else {
+                clearInterval(updater)
+                restoreContent()
+            }
+        }
+    }
+});
 
-
-// Update Every 5 seconds
-var updater = setInterval(() => {
+setTimeout(() => {
     changeImages()
 }, 5 * 1000)
