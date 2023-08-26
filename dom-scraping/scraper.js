@@ -25,6 +25,8 @@ function changeContent(textElements) {
         }
     }
 }
+
+
 /*
  * Get access to all images on the website
  */
@@ -43,10 +45,21 @@ function isImage(element) {
     return element.tagName == "IMG"
 }
 
+
+function postImages() {
+
+}
+
+
 function changeImages() {
     let imageElements = getImageElements()
     console.log(imageElements)
 }
+
+/*
+ * Track if the updater is active
+ */
+
 
 
 // Update Every 5 seconds

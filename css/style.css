@@ -9,6 +9,7 @@
     padding: 0px;
     display: block;
     box-sizing: border-box;
+    color: #707070;
     font-family: "Cookie Monster";
     line-height: normal;
 }
@@ -27,8 +28,9 @@ body {
     align-items: center;
 }
 
-br {
-
+.no-uwu {
+    font-family: "Roboto", sans-serif;
+    font-size: 22px;
 }
 
 #uwu-face {
@@ -37,16 +39,23 @@ br {
 }
 
 #uwu-dialogue {
+    min-height: 40%;
     padding: 8px;
-    margin-bottom: 32px;
+    margin-bottom: 48px;
     border-radius: 16px;
     background-color: #FEFBF5;
 }
 
 #uwu-toggle {
-    text-align: center;
-    padding: 8px;
+    padding: 4px;
     border-radius: 16px;
     background-color: #FCE5EF;
+    border: solid;
     border-color: #DBA3CE;
+    text-align: center;
+}
+
+#uwu-toggle:hover {
+    cursor: pointer;
+    background-color: #DBA3CE;
 }
