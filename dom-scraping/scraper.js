@@ -95,50 +95,63 @@ function isImage(element) {
 }
 
 function isNewImage(element) {
-    return !element.classList.contains("requested")
+    return element.classList.contains("requested") == false
 }
 
 function createImageJson(elements) {
     var obj = new Object()
+    console.log(elements)
     obj.urls = []
     for (element of elements) {
-        console.log(element, element.getAttribute('src'), element.getAttribute('src') == "")
-        obj.urls.push(element.src)
-        element.classList.add("requested")
+        if (!element.classList.contains("requested")) {
+            obj.urls.push(element.src)
+        }
     }
     return JSON.stringify(obj)
 }
 
 function postImages(elements) {
+    // send packets for new images
     var request = new XMLHttpRequest()
     request.open("POST", "https://wenjunblog.xyz/echoJson")
     request.setRequestHeader("Content-Type", "application/json")
-    var newImages = Array.from(elements).filter(isNewImage)
-    var data = createImageJson(newImages)
-    console.log(data)
+
+    let newImages = Array.from(elements).filter(isNewImage)
+    let data = createImageJson(newImages)
     request.send(data)
 
+    // Receive response
     request.onreadystatechange = function () {
-        console.log("Got packet")
         if (request.readyState === 4 && request.status === 200) {
-            var json = JSON.parse(request.response)
-            console.log(json)
-            changeImages(newImages, json)
+            let json = JSON.parse(request.response)
+            console.log("Got packet", json)
+            mapImages(json)
         }
     };
 }
 
-function changeImages(elements, json) {
-    var images = json.urls
-    console.log(json.urls, json[0])
-    for (let i = 0; i < images.length; ++i) {
-        console.log(images[i])
-        imageCache.push([elements[i], elements[i].src, elements[i].srcset])
-        elements[i].src = images[i]
-        elements[i].srcset = images[i]
+function mapImages(json) {
+    let images = getImageElements()
+    for (image of images) {
+        if (!element.classList.contains("requested") && image.getAttribute('src') in json.urls) {
+            let newImage = json.urls[image.getAttribute('src')]
+            imageCache.push([image, image.getAttribute('src'), newImage])
+            element.classList.add("requested")
+        }
     }
+    console.log("Image Cache:",imageCache)
 }
 
+
+function changeImages(elements, json) {
+    var images = json.urls // Dict
+    console.log(json.urls)
+    for (let i = 0; i < elements.length; ++i) {
+        elements[i].src = images[i]
+        elements[i].srcset = images[i]
+        elements[i].classList.add("has-cat")
+    }
+}
 
 /*
  * Track if the updater is active
