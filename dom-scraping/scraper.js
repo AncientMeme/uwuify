@@ -118,6 +118,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
 });
 
-// setTimeout(() => {
-//     changeImages()
-// }, 2 * 1000)
+setTimeout(() => {
+    changeImages()
+}, 2 * 1000)
