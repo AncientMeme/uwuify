@@ -1,32 +1,6 @@
-// Data to store
-var textElements = []
-var images = []
-
-// Setup DOM observer
-// const obs_config = {childList: true, subtree: true}
-// const callback = (mutations, observer) => {
-//     clearTimeout(time_id)
-//     time_id = setTimeout(() => {
-//         elements = bfs()
-//         images = getImages(elements)
-//         console.log(images)
-//     }, 3 * 1000)
-// }
-// const observer = new MutationObserver(callback);
-// observer.observe(body, obs_config);
-
-// Get images from elements
-function getImages(elements) {
-    images = []
-    for (element of elements) {
-        if (element.tagName === "IMG") {
-            images.push(element)
-        }
-    }
-    return images
-}
-
-// Get all text containers
+/*
+ * Grabs text containers and UwUify the content
+ */
 function getTextElements() {
     let domElements = document.querySelectorAll("*")
     let textElements = Array.from(domElements).filter(containText)
@@ -34,17 +8,16 @@ function getTextElements() {
 }
 
 function containText(element) {
-    const style = getComputedStyle(element);
-    // check if display none, of if one of the height/width elements is < 0 then it wouldn't be visible, so count as hidden.
-    if(style.display === 'none' || style.width <= 0 || style.height <= 0) {
-        return false
-    }
     // check if the element has a text node, if so, make sure it's not just whitespace.
     return Array.from(element.childNodes).find(node=>node.nodeType===3 && node.textContent.trim().length>1);
 }
 
-// Change text content
-function changeText(textElements) {
+function changeTextElements() {
+    let textElements = getTextElements()
+    changeContent(textElements)
+}
+
+function changeContent(textElements) {
     for (element of textElements) {
         if (!element.classList.contains("UwU")) {
             element.textContent = "UwU " + element.textContent
@@ -52,12 +25,31 @@ function changeText(textElements) {
         }
     }
 }
+/*
+ * Get access to all images on the website
+ */
+function getImageElements() {
+    let domElements = document.querySelectorAll("*")
+    let imageElements = Array.from(domElements).filter(isImage)
+    return imageElements
+}
 
-textElements = getTextElements()
-changeText(textElements)
+function isImage(element) {
+    const style = getComputedStyle(element);
+    // Disregard hidden elements and images that are too small.
+    if(style.display === 'none' || element.width <= 128 || element.height <= 128) {
+        return false
+    }
+    return element.tagName == "IMG"
+}
+
+function changeImages() {
+    let imageElements = getImageElements()
+    console.log(imageElements)
+}
+
 
 // Update Every 5 seconds
 var updater = setInterval(() => {
-    textElements = getTextElements()
-    changeText(textElements)
+    changeImages()
 }, 5 * 1000)
