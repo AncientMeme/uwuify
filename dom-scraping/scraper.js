@@ -56,8 +56,19 @@ function restoreContent() {
     }
 }
 
-function uwuifyText(text) 
-{
+function getRandomElement(array) {
+    return array[Math.floor(Math.random() * array.length)];
+}
+
+function uwuifyText(text) {
+    const uwuReplacements = [
+        // ... other replacement rules ...
+        { pattern: /\bcan\b/g, replacement: "c-can" }, // \b ensures whole word matching
+        //{ pattern: /(\w)(\w*)/g, replacement: "$1-$1$2" }, // Stuttering effect
+        { pattern: /!+/g, replacement: () => " " + getRandomElement(["❤️", "✨", "🎉", "( ˶ˆᗜˆ˵ )", "♡⸜(˶˃ ᵕ ˂˶)⸝♡"]) + " " },
+        { pattern: /\?+/g, replacement: () => " " + getRandomElement(["🌸", "🐾", "❓", "◝(ᵔᵕᵔ)◜", "(ㅅ´ ˘ `)"]) + " " },
+    ];
+
     if (text) {
         text = text.replace(/(?:r|l)/g, "w");
         text = text.replace(/(?:R|L)/g, "W");
@@ -65,8 +76,16 @@ function uwuifyText(text)
         text = text.replace(/N([aeiou])/g, "Ny$1");
         text = text.replace(/th/g, "f");
         text = text.replace(/ove/g, "uv");
-        text = text.replace(/!+/g, " " + "❤️".repeat(Math.floor(Math.random() * 3) + 1) + " ");
-        text = text.replace(/\?+/g, " " + "🌸".repeat(Math.floor(Math.random() * 3) + 1) + " ");
+        // text = text.replace(/!+/g, " " + "❤️".repeat(Math.floor(Math.random() * 3) + 1) + " ");
+        // text = text.replace(/\?+/g, " " + "🌸".repeat(Math.floor(Math.random() * 3) + 1) + " ");
+
+        uwuReplacements.forEach(({pattern, replacement}) => {
+            if (typeof replacement === "function") {
+                text = text.replace(pattern, replacement);
+            } else {
+                text = text.replace(pattern, replacement);
+            }
+        });
         return text;
     }
 }
