@@ -60,8 +60,7 @@ def echoJson():
     content = {}
     # content['urls'] = img_paths
     content['urls'] = ret
-    jsonifiedContent = jsonify(content)
-    return jsonifiedContent
+    return jsonify(content)
 
 @app.route("/echo", methods=['GET', 'POST'])
 def echo():
