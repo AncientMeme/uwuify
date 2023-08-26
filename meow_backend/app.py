@@ -1,9 +1,13 @@
-from flask import Flask
+from flask import Flask, send_file
 from flask import jsonify
 from flask import request
 from logging.config import dictConfig
 from flask_cors import CORS
 import json
+import os
+import random
+import photo_merger as merger
+
 
 dictConfig({
     'version': 1,
@@ -41,20 +45,40 @@ def hello_world():
 
 @app.route("/echoJson", methods=['GET', 'POST'])
 def echoJson():
-    data = request.json
+    # data = request.json
     # jsonifiedContent = jsonify(data)
-    app.logger.info('body content: ' + json.dumps(data))
-    return data
+    # app.logger.info('body content: ' + json.dumps(data))
+    # urls = data['urls']c
+    urls = ['https://i.ytimg.com/vi/L45Ua8weKqs/hqdefault.jpg?sqp=-oaymwEcCOADEI4CSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLC9XUQUbDSSoNC2SwmU10yn5tbCLQ']
+    img_paths = merger.downloadImgs(urls)
+    for i in range(len(img_paths)):
+        img_paths[i] = 'https://wenjunblog.xyz/' + img_paths[i]
+    content = {}
+    content['urls'] = img_paths
+    jsonifiedContent = jsonify(content)
+    return jsonifiedContent
 
 @app.route("/echo", methods=['GET', 'POST'])
 def echo():
     app.logger.info('text is: ' + request.args.get('text', ''))
     return "You said: " + request.args.get('text', '')
 
-@app.route("/download", methods=['GET', 'POST'])
-def downlaod_img():
-    url = request.json['urls']
-    print(url)
-    return "success"
-    # img_data = requests.get(image_url).content
+
+def random_image():
+    """
+    Return a random image from the ones in the static/ directory
+    """
+    img_dir = "./static"
+    img_list = os.listdir(img_dir)
+    img_path = os.path.join(img_dir, random.choice(img_list))
+    print(img_path)
+    return img_path
+
+@app.route('/')
+def myapp():
+    """
+    Returns a random image directly through send_file
+    """
+    image = random_image()
+    return send_file(image, mimetype='image/jpg')
 
