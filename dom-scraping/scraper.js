@@ -1,32 +1,17 @@
-// Data to store
-var textElements = []
-var images = []
+/* Keep track of data */
+var isActive = true
+var updater = null
+var textCache = []
 
-// Setup DOM observer
-// const obs_config = {childList: true, subtree: true}
-// const callback = (mutations, observer) => {
-//     clearTimeout(time_id)
-//     time_id = setTimeout(() => {
-//         elements = bfs()
-//         images = getImages(elements)
-//         console.log(images)
-//     }, 3 * 1000)
-// }
-// const observer = new MutationObserver(callback);
-// observer.observe(body, obs_config);
+/* Get user settings */
+chrome.storage.sync.get(["active"], function(data) {
+    isActive = data.active
+    toggleScraper()
+})
 
-// Get images from elements
-function getImages(elements) {
-    images = []
-    for (element of elements) {
-        if (element.tagName === "IMG") {
-            images.push(element)
-        }
-    }
-    return images
-}
-
-// Get all text containers
+/*
+ * Grabs text containers and UwUify the content
+ */
 function getTextElements() {
     let domElements = document.querySelectorAll("*")
     let textElements = Array.from(domElements).filter(containText)
@@ -34,30 +19,113 @@ function getTextElements() {
 }
 
 function containText(element) {
-    const style = getComputedStyle(element);
-    // check if display none, of if one of the height/width elements is < 0 then it wouldn't be visible, so count as hidden.
-    if(style.display === 'none' || style.width <= 0 || style.height <= 0) {
-        return false
-    }
     // check if the element has a text node, if so, make sure it's not just whitespace.
     return Array.from(element.childNodes).find(node=>node.nodeType===3 && node.textContent.trim().length>1);
 }
 
-// Change text content
-function changeText(textElements) {
+function changeContent() {
+    if (!isActive) {
+        return
+    }
+    
+    let textElements = getTextElements()
     for (element of textElements) {
         if (!element.classList.contains("UwU")) {
+            textCache.push([element, element.textContent])
             element.textContent = "UwU " + element.textContent
             element.classList.add("UwU")
         }
     }
 }
 
-textElements = getTextElements()
-changeText(textElements)
+function restoreContent() {
+    for (let i = 0; i < textCache.length; ++i) {
+        console.log("Restore Text")
+        if (textCache[i][0].classList.contains("UwU")) {
+            textCache[i][0].textContent = textCache[i][1]
+            textCache[i][0].classList.remove("UwU")
+        }
+    }
+}
 
-// Update Every 5 seconds
-var updater = setInterval(() => {
-    textElements = getTextElements()
-    changeText(textElements)
-}, 5 * 1000)
+
+/*
+ * Get access to all images on the website
+ */
+function getImageElements() {
+    let domElements = document.querySelectorAll("*")
+    let imageElements = Array.from(domElements).filter(isImage)
+    return imageElements
+}
+
+function isImage(element) {
+    const style = getComputedStyle(element);
+    // Disregard hidden elements and images that are too small.
+    if(style.display === 'none' || element.width < 128 || element.height < 128) {
+        return false
+    }
+    return element.tagName == "IMG"
+}
+
+function createImageJson(elements) {
+    var obj = new Object()
+    obj.urls = []
+    for (element of elements) {
+        obj.urls.push(element.src)
+    }
+    return JSON.stringify(obj)
+}
+
+function postImages(elements) {
+    var request = new XMLHttpRequest()
+    request.open("POST", "https://wenjunblog.xyz/echoJson")
+    request.setRequestHeader("Content-Type", "application/json")
+    var data = createImageJson(elements)
+    console.log(data)
+    request.send(data)
+
+    request.onreadystatechange = function () {
+        console.log("Got packet")
+        if (request.readyState === 4 && request.status === 200) {
+            var json = JSON.parse(request.response)
+            console.log(json)
+        }
+    };
+}
+
+function changeImages() {
+    let imageElements = getImageElements()
+    //postImages(imageElements)
+}
+
+
+/*
+ * Track if the updater is active
+ */
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if(request) {
+        if (request.msg == "toggled") {
+            console.log("uwu toggled:", request.data)
+            isActive = request.data
+            toggleScraper()
+        }
+    }
+});
+
+function toggleScraper() {
+    if (isActive) {
+        changeContent()
+        updater = setInterval(() => {
+            changeContent()
+        }, 5 * 1000)
+    } else {
+        if (updater) {
+            clearInterval(updater)
+            restoreContent()
+        }
+    }
+}
+
+// setTimeout(() => {
+//     changeImages()
+// }, 2 * 1000)

@@ -11,5 +11,8 @@
             "js": ["dom-scraping/scraper.js"],
             "matches": ["<all_urls>"]
         }
+    ],
+    "permissions": [
+        "storage"
     ]
 }
