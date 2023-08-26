@@ -1,0 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato&family=Roboto');
+@font-face {
+    font-family: "Cookie Monster";
+    src: url(../font/cookie-monster.ttf);
+}
+
+* {
+    margin: 0px;
+    padding: 0px;
+    display: block;
+    box-sizing: border-box;
+    font-family: "Cookie Monster";
+    line-height: normal;
+}
+
+html {
+    background-color: #F3C4BB;
+}
+
+body {
+    min-width: 240px;
+    min-height: 360px;
+    padding: 4%;
+    display: flex;
+    flex-flow: column wrap;
+    justify-content: space-around;
+    align-items: center;
+}
+
+br {
+
+}
+
+#uwu-face {
+    font-size: 64px;
+    font-weight: 500;
+}
+
+#uwu-dialogue {
+    padding: 8px;
+    margin-bottom: 32px;
+    border-radius: 16px;
+    background-color: #FEFBF5;
+}
+
+#uwu-toggle {
+    text-align: center;
+    padding: 8px;
+    border-radius: 16px;
+    background-color: #FCE5EF;
+    border-color: #DBA3CE;
+}
