@@ -4,9 +4,10 @@ var updater = null
 var textCache = []
 
 /* Get user settings */
-chrome.storage.sync.get(["active"], function(data) {
+chrome.storage.sync.get(["active"]).then((data)=>{
     isActive = data.active
-    toggleScraper()
+    console.log("Plugin Status:", isActive)
+    changeContent()
 })
 
 /*
@@ -24,23 +25,24 @@ function containText(element) {
 }
 
 function changeContent() {
-    if (!isActive) {
-        return
-    }
-    
-    let textElements = getTextElements()
-    for (element of textElements) {
-        if (!element.classList.contains("UwU")) {
-            textCache.push([element, element.textContent])
-            element.textContent = "UwU " + element.textContent
-            element.classList.add("UwU")
+    if (isActive) {
+        console.log("change text uwu")
+        let textElements = getTextElements()
+        for (element of textElements) {
+            if (!element.classList.contains("UwU")) {
+                textCache.push([element, element.textContent])
+                element.textContent = "UwU " + element.textContent
+                element.classList.add("UwU")
+            }
         }
+
+        setTimeout(() => {changeContent()}, 5 * 1000)
     }
 }
 
 function restoreContent() {
+    console.log("Restore Text")
     for (let i = 0; i < textCache.length; ++i) {
-        console.log("Restore Text")
         if (textCache[i][0].classList.contains("UwU")) {
             textCache[i][0].textContent = textCache[i][1]
             textCache[i][0].classList.remove("UwU")
@@ -107,24 +109,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         if (request.msg == "toggled") {
             console.log("uwu toggled:", request.data)
             isActive = request.data
-            toggleScraper()
+            if (isActive) {
+                changeContent()
+            } else {
+                restoreContent()
+            }
         }
     }
 });
-
-function toggleScraper() {
-    if (isActive) {
-        changeContent()
-        updater = setInterval(() => {
-            changeContent()
-        }, 5 * 1000)
-    } else {
-        if (updater) {
-            clearInterval(updater)
-            restoreContent()
-        }
-    }
-}
 
 // setTimeout(() => {
 //     changeImages()
