@@ -2,6 +2,7 @@
 var isActive = true
 var updater = null
 var textCache = []
+var imageCache = []
 
 /* Get user settings */
 chrome.storage.sync.get(["active"]).then((data)=>{
@@ -86,14 +87,24 @@ function isImage(element) {
     if(style.display === 'none' || element.width < 128 || element.height < 128) {
         return false
     }
+    // Disregard if the image has no src tag
+    if (!element.getAttribute('src') || element.getAttribute('src') === "") {
+        return false
+    }
     return element.tagName == "IMG"
+}
+
+function isNewImage(element) {
+    return !element.classList.contains("requested")
 }
 
 function createImageJson(elements) {
     var obj = new Object()
     obj.urls = []
     for (element of elements) {
+        console.log(element, element.getAttribute('src'), element.getAttribute('src') == "")
         obj.urls.push(element.src)
+        element.classList.add("requested")
     }
     return JSON.stringify(obj)
 }
@@ -102,7 +113,8 @@ function postImages(elements) {
     var request = new XMLHttpRequest()
     request.open("POST", "https://wenjunblog.xyz/echoJson")
     request.setRequestHeader("Content-Type", "application/json")
-    var data = createImageJson(elements)
+    var newImages = Array.from(elements).filter(isNewImage)
+    var data = createImageJson(newImages)
     console.log(data)
     request.send(data)
 
@@ -111,13 +123,20 @@ function postImages(elements) {
         if (request.readyState === 4 && request.status === 200) {
             var json = JSON.parse(request.response)
             console.log(json)
+            changeImages(newImages, json)
         }
     };
 }
 
-function changeImages() {
-    let imageElements = getImageElements()
-    //postImages(imageElements)
+function changeImages(elements, json) {
+    var images = json.urls
+    console.log(json.urls, json[0])
+    for (let i = 0; i < images.length; ++i) {
+        console.log(images[i])
+        imageCache.push([elements[i], elements[i].src, elements[i].srcset])
+        elements[i].src = images[i]
+        elements[i].srcset = images[i]
+    }
 }
 
 
@@ -138,6 +157,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
 });
 
-setTimeout(() => {
-    changeImages()
-}, 2 * 1000)
+setInterval(() => {
+    let imageElements = getImageElements()
+    postImages(imageElements)
+}, 3 * 1000)
