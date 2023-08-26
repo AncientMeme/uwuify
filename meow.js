@@ -6,14 +6,21 @@ var face = document.getElementById("uwu-face")
 var textBox = document.getElementById("uwu-dialogue")
 var toggle = document.getElementById("uwu-toggle")
 
+/* Track button toggle */
 toggle.addEventListener("click", function(e) {
     uwuify = !uwuify
+    togglePlugin()
+})
+
+function togglePlugin() {
     if (uwuify) {
         uwuMode()
     } else {
         boringMode()
     } 
-})
+    sendToScraper()
+    chrome.storage.sync.set({"active": uwuify})
+}
 
 function boringMode() {
     face.textContent = "/(0n0)\\"
@@ -31,9 +38,20 @@ function uwuMode() {
 
     textBox.classList.remove("no-uwu")
     toggle.classList.add("no-uwu")
+    
+}
 
-    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-        chrome.tabs.sendMessage({}, {msg: "Button clicked", data: uwuify}, (response) => {
-            if (response) {}
+/* Update the scraper if the plugin is active */
+function sendToScraper() {
+    chrome.tabs.query({}, (tabs) => {
+        for (var i=0; i < tabs.length; ++i) {
+            chrome.tabs.sendMessage(tabs[i].id, {msg: "toggled", data: uwuify})
+        }
     })
 }
+
+/* Get user settings */
+chrome.storage.sync.get(["active"], function(data) {
+    uwuify = data.active
+    togglePlugin()
+})

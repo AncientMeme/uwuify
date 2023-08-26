@@ -1,12 +1,13 @@
 /* Keep track of data */
 var isActive = true
+var updater = null
 var textCache = []
-// Update Every 5 seconds
-var updater = setInterval(() => {
-    textElements = getTextElements()
-    changeContent(textElements)
-}, 5 * 1000)
 
+/* Get user settings */
+chrome.storage.sync.get(["active"], function(data) {
+    isActive = data.active
+    toggleScraper()
+})
 
 /*
  * Grabs text containers and UwUify the content
@@ -22,7 +23,12 @@ function containText(element) {
     return Array.from(element.childNodes).find(node=>node.nodeType===3 && node.textContent.trim().length>1);
 }
 
-function changeContent(textElements) {
+function changeContent() {
+    if (!isActive) {
+        return
+    }
+    
+    let textElements = getTextElements()
     for (element of textElements) {
         if (!element.classList.contains("UwU")) {
             textCache.push([element, element.textContent])
@@ -55,7 +61,7 @@ function getImageElements() {
 function isImage(element) {
     const style = getComputedStyle(element);
     // Disregard hidden elements and images that are too small.
-    if(style.display === 'none' || element.width <= 128 || element.height <= 128) {
+    if(style.display === 'none' || element.width < 128 || element.height < 128) {
         return false
     }
     return element.tagName == "IMG"
@@ -70,26 +76,26 @@ function createImageJson(elements) {
     return JSON.stringify(obj)
 }
 
-
 function postImages(elements) {
     var request = new XMLHttpRequest()
-    request.open("POST", "//8.222.181.202:9999/echoJson")
+    request.open("POST", "https://wenjunblog.xyz/echoJson")
     request.setRequestHeader("Content-Type", "application/json")
     var data = createImageJson(elements)
     console.log(data)
     request.send(data)
 
     request.onreadystatechange = function () {
+        console.log("Got packet")
         if (request.readyState === 4 && request.status === 200) {
-            // var json = JSON.parse(request.response);
-            console.log(request.response);
+            var json = JSON.parse(request.response)
+            console.log(json)
         }
     };
 }
 
 function changeImages() {
     let imageElements = getImageElements()
-    postImages(imageElements)
+    //postImages(imageElements)
 }
 
 
@@ -101,20 +107,25 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         if (request.msg == "toggled") {
             console.log("uwu toggled:", request.data)
             isActive = request.data
-
-            if (isActive) {
-                updater = setInterval(() => {
-                    textElements = getTextElements()
-                    changeContent(textElements)
-                }, 5 * 1000)
-            } else {
-                clearInterval(updater)
-                restoreContent()
-            }
+            toggleScraper()
         }
     }
 });
 
-setTimeout(() => {
-    changeImages()
-}, 5 * 1000)
+function toggleScraper() {
+    if (isActive) {
+        changeContent()
+        updater = setInterval(() => {
+            changeContent()
+        }, 5 * 1000)
+    } else {
+        if (updater) {
+            clearInterval(updater)
+            restoreContent()
+        }
+    }
+}
+
+// setTimeout(() => {
+//     changeImages()
+// }, 2 * 1000)
