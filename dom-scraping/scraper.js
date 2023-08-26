@@ -9,6 +9,7 @@ chrome.storage.sync.get(["active"]).then((data)=>{
     isActive = data.active
     console.log("Plugin Status:", isActive)
     changeContent()
+    changeImages()
 })
 
 /*
@@ -32,7 +33,6 @@ function containText(element) {
 
 function changeContent() {
     if (isActive) {
-        console.log("change text uwu")
         let textElements = getTextElements()
         for (element of textElements) {
             if (!element.classList.contains("UwU")) {
@@ -42,7 +42,7 @@ function changeContent() {
             }
         }
 
-        setTimeout(() => {changeContent()}, 5 * 1000)
+        setTimeout(() => {changeContent()}, 3 * 1000)
     }
 }
 
@@ -100,7 +100,6 @@ function isNewImage(element) {
 
 function createImageJson(elements) {
     var obj = new Object()
-    console.log(elements)
     obj.urls = []
     for (element of elements) {
         if (!element.classList.contains("requested")) {
@@ -117,39 +116,55 @@ function postImages(elements) {
     request.setRequestHeader("Content-Type", "application/json")
 
     let newImages = Array.from(elements).filter(isNewImage)
-    let data = createImageJson(newImages)
-    request.send(data)
+    console.log(newImages.length)
+    if (newImages.length > 0) {
+        let data = createImageJson(newImages)
+        request.send(data)
 
-    // Receive response
-    request.onreadystatechange = function () {
-        if (request.readyState === 4 && request.status === 200) {
-            let json = JSON.parse(request.response)
-            console.log("Got packet", json)
-            mapImages(json)
+        // Receive response
+        request.onreadystatechange = function () {
+            if (request.readyState === 4 && request.status === 200) {
+                let json = JSON.parse(request.response)
+                console.log("Got packet", json)
+                mapImages(json)
+            }
         }
-    };
+    }
 }
 
 function mapImages(json) {
     let images = getImageElements()
     for (image of images) {
-        if (!element.classList.contains("requested") && image.getAttribute('src') in json.urls) {
+        if (!image.classList.contains("requested") && image.getAttribute('src') in json.urls) {
             let newImage = json.urls[image.getAttribute('src')]
             imageCache.push([image, image.getAttribute('src'), newImage])
-            element.classList.add("requested")
+            image.classList.add("requested")
         }
     }
     console.log("Image Cache:",imageCache)
 }
 
+function changeImages() {
+    if (isActive) {
+        for (image of imageCache) {
+            if (!image[0].classList.contains("has-cat")) {
+                image[0].src = image[2]
+                image[0].srcset = image[2]
+                image[0].classList.add("has-cat")
+            }
+        }
 
-function changeImages(elements, json) {
-    var images = json.urls // Dict
-    console.log(json.urls)
-    for (let i = 0; i < elements.length; ++i) {
-        elements[i].src = images[i]
-        elements[i].srcset = images[i]
-        elements[i].classList.add("has-cat")
+        setTimeout(() => {changeImages()}, 3 * 1000)
+    }
+}
+
+function restoreImages() {
+    for (image of imageCache) {
+        if (image[0].classList.contains("has-cat")) {
+            image[0].src = image[1]
+            image[0].srcset = image[1]
+            image[0].classList.remove("has-cat")
+        }
     }
 }
 
@@ -163,8 +178,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             isActive = request.data
             if (isActive) {
                 changeContent()
+                changeImages()
             } else {
                 restoreContent()
+                restoreImages()
             }
         }
     }
