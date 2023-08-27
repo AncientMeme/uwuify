@@ -24,7 +24,7 @@ function getTextElements() {
 function containText(element) {
     const style = getComputedStyle(element);
     // Disregard hidden elements and images that are too small.
-    if(style.display === 'none' || element.width < 128 || element.height < 128) {
+    if(style.display === 'none' || element.width <= 0 || element.height <= 0) {
         return false
     }
     // check if the element has a text node, if so, make sure it's not just whitespace.
