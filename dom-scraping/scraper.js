@@ -65,8 +65,8 @@ function uwuifyText(text) {
         // ... other replacement rules ...
         { pattern: /\bcan\b/g, replacement: "c-can" }, // \b ensures whole word matching
         //{ pattern: /(\w)(\w*)/g, replacement: "$1-$1$2" }, // Stuttering effect
-        { pattern: /!+/g, replacement: () => " " + getRandomElement(["❤️", "✨", "o(*>ω<*)o", "(ﾉ´ヮ´)ﾉ", "( ˶ˆᗜˆ˵ )", "♡⸜(˶˃ ᵕ ˂˶)⸝♡"]) + " " },
-        { pattern: /\?+/g, replacement: () => " " + getRandomElement(["🌸", "🐾", "(‘. • ᵕ •. `)", "(づ •. •)?", "◝(ᵔᵕᵔ)◜", "(ㅅ´ ˘ `)"]) + " " },
+        { pattern: /!+/g, replacement: () => " " + getRandomElement(["❤️", "৻(  •̀ ᗜ •́  ৻)", "♡⸜(˶˃ ᵕ ˂˶)⸝♡", "o(*>ω<*)o", "(ﾉ´ヮ´)ﾉ", "( ˶ˆᗜˆ˵ )", "♡⸜(˶˃ ᵕ ˂˶)⸝♡"]) + " " },
+        { pattern: /\?+/g, replacement: () => " " + getRandomElement(["🌸", "o( ˶^▾^˶ )o", "⸜(｡˃ ᵕ ˂ )⸝♡", "(‘. • ᵕ •. `)", "(づ •. •)?", "◝(ᵔᵕᵔ)◜", "(ㅅ´ ˘ `)"]) + " " },
     ];
 
     if (text) {
