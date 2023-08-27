@@ -14,7 +14,7 @@
     },
     "content_scripts": [
         {
-            "js": ["dom-scraping/scraper.js"],
+            "js": ["scripts/translator.js"],
             "matches": ["<all_urls>"]
         }
     ],
