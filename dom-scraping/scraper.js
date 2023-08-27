@@ -65,8 +65,8 @@ function uwuifyText(text) {
         // ... other replacement rules ...
         { pattern: /\bcan\b/g, replacement: "c-can" }, // \b ensures whole word matching
         //{ pattern: /(\w)(\w*)/g, replacement: "$1-$1$2" }, // Stuttering effect
-        { pattern: /!+/g, replacement: () => " " + getRandomElement(["❤️", "✨", "🎉", "( ˶ˆᗜˆ˵ )", "♡⸜(˶˃ ᵕ ˂˶)⸝♡"]) + " " },
-        { pattern: /\?+/g, replacement: () => " " + getRandomElement(["🌸", "🐾", "❓", "◝(ᵔᵕᵔ)◜", "(ㅅ´ ˘ `)"]) + " " },
+        { pattern: /!+/g, replacement: () => " " + getRandomElement(["❤️", "✨", "o(*>ω<*)o", "(ﾉ´ヮ´)ﾉ", "( ˶ˆᗜˆ˵ )", "♡⸜(˶˃ ᵕ ˂˶)⸝♡"]) + " " },
+        { pattern: /\?+/g, replacement: () => " " + getRandomElement(["🌸", "🐾", "(‘. • ᵕ •. `)", "(づ •. •)?", "◝(ᵔᵕᵔ)◜", "(ㅅ´ ˘ `)"]) + " " },
     ];
 
     if (text) {
@@ -135,7 +135,7 @@ function postImages(elements) {
     request.setRequestHeader("Content-Type", "application/json")
 
     let newImages = Array.from(elements).filter(isNewImage)
-    console.log(newImages.length)
+    console.log("new images:", newImages.length)
     if (newImages.length > 0) {
         let data = createImageJson(newImages)
         request.send(data)
@@ -164,6 +164,7 @@ function mapImages(json) {
 }
 
 function changeImages() {
+    console.log("change image owo")
     if (isActive) {
         for (image of imageCache) {
             if (!image[0].classList.contains("has-cat")) {
