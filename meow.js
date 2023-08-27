@@ -23,7 +23,7 @@ function togglePlugin() {
 }
 
 function boringMode() {
-    face.textContent = "/(0n0)\\"
+    face.textContent = "(:()"
     textBox.innerHTML = "*sobbing*<br>Hooman wants boring website :("
     toggle.textContent = "o Yes to UwU o"
 
