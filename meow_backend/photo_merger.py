@@ -23,8 +23,8 @@ def resizeCat(original, cat, ratio):
     ori_width = ori_shape[0]
     ori_height = ori_shape[1]
     min_origin = min(ori_width, ori_height)
-    aspect_ratio = cat.shape[0]/cat.shape[1]
-    resizedCat = cv.resize(cat, (round(min_origin * ratio), round(min_origin * ratio * aspect_ratio)))
+    aspect_ratio = cat.shape[1]/cat.shape[0]
+    resizedCat = cv.resize(cat, (round(min_origin * ratio * aspect_ratio),round(min_origin * ratio)))
     return resizedCat
 
 
