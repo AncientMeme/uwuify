@@ -1,7 +1,12 @@
 /* Store image data */
 var isActive = false;
-var imagesPath = "images/"
-var imageCache = []
+const imagesPath = "images/"
+const imageCount = 12;
+var imageCache = [];
+
+/* Image randomizer settings */
+const noRepeats = 6;
+const lastIndexes = Array(noRepeats);
 
 /* Get user settings */
 chrome.storage.sync.get(["active"]).then((data)=>{
@@ -73,7 +78,17 @@ function restoreImages() {
 }
 
 function getImageURL() {
-    return chrome.runtime.getURL(`${imagesPath}cat-01.png`);
+    // Randomize image index, also prevent frequent repeats
+    let imageIndex = -1;
+    while (lastIndexes.includes(imageIndex) || imageIndex < 0) {
+        imageIndex = 1 + Math.floor(Math.random() * imageCount);
+    }
+    lastIndexes.shift();
+    lastIndexes.push(imageIndex);
+
+    // Output the url of chosen image
+    (imageIndex < 10)? imageIndex = "0" + imageIndex.toString() : imageIndex = imageIndex.toString()
+    return chrome.runtime.getURL(`${imagesPath}cat-${imageIndex}.png`);
 }
 
 /* Due to srcset containing multiple url, we cannot directly set it */
