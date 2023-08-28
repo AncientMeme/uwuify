@@ -13,9 +13,7 @@ chrome.storage.sync.get(["active"]).then((data)=>{
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if(request && request.msg == "toggled") {
         isActive = request.data;
-        if (!isActive) {
-            restoreImages();
-        }
+        isActive? changeImages() : restoreImages();
     }
 });
 
@@ -43,24 +41,25 @@ function isImage(element) {
 }
 
 function changeImages() {
-    if (isActive) {
-        let images = getImageElements();
-        images.forEach((element) => {
-            if (!element.classList.contains("marked")) {
-                imageCache.push([element, element.src, element.srcset]);
-                element.classList.add("marked");
-            }
-
-            if (!element.classList.contains("changed")) {
-                /* fetch url for image */
-                let url = getImageURL();
-
-                element.src = url;
-                element.srcset = getModifySrcset(element, url);
-                element.classList.add("changed");
-            }
-        });
+    if (!isActive) {
+       return;
     }
+
+    let images = getImageElements();
+    images.forEach((element) => {
+        if (!element.classList.contains("marked")) {
+            imageCache.push([element, element.src, element.srcset]);
+            element.classList.add("marked");
+        }
+
+        if (!element.classList.contains("changed")) {
+            /* fetch url for image */
+            let url = getImageURL();
+            element.src = url;
+            element.srcset = getModifySrcset(element, url);
+            element.classList.add("changed");
+        }
+    });
 
     setTimeout(changeImages, 3 * 1000);
 }
@@ -69,6 +68,7 @@ function restoreImages() {
     for (image of imageCache) {
         image[0].src = image[1];
         image[0].srcset = image[2];
+        image[0].classList.remove("changed");
     }
 }
 

@@ -3,7 +3,7 @@ const rules = [
     { pattern: /(?:r|l)/g, replacement: "w"},
     { pattern: /(?:R|L)/g, replacement: "W"},
     { pattern: /n([aeiou])/g, replacement: "ny$1"},
-    { pattern: /N([AEIOU])/g, replacement: "Ny$1"},
+    { pattern: /N([AEIOU])/g, replacement: "NY$1"},
     { pattern: /th/g, replacement: "f"},
     { pattern: /ove/g, replacement: "uv"},
     { pattern: /\bcan\b/g, replacement: "c-can" },
