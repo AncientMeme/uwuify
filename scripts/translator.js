@@ -23,7 +23,7 @@ chrome.storage.sync.get(["active"]).then((data)=>{
     changeContent();
 })
 
-/* Track if the translator is active */
+/* Track if the plugin is active */
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if(request && request.msg == "toggled") {
         isActive = request.data;
@@ -35,16 +35,16 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
  * Grabs text containers and UwUify the content
  */
 function getTextElements() {
-    let domElements = document.querySelectorAll("*")
-    let textElements = Array.from(domElements).filter(containText)
-    return textElements
+    let domElements = document.querySelectorAll("*");
+    let textElements = Array.from(domElements).filter(containText);
+    return textElements;
 }
 
 function containText(element) {
     const style = getComputedStyle(element);
     // Disregard hidden elements and images that are too small.
     if(style.display === 'none' || element.width <= 0 || element.height <= 0) {
-        return false
+        return false;
     }
     // check if the element has a text node, if so, make sure it's not just whitespace.
     return Array.from(element.childNodes).find(node=>node.nodeType===3 && node.textContent.trim().length>1);
@@ -52,26 +52,26 @@ function containText(element) {
 
 function changeContent() {
     if (!isActive) {
-        return
+        return;
     }
 
-    let textElements = getTextElements()
+    let textElements = getTextElements();
     for (element of textElements) {
         if (!element.classList.contains("UwU")) {
-            textCache.push([element, element.textContent])
-            element.innerText = uwuifyText(element.innerText) 
-            element.classList.add("UwU")
+            textCache.push([element, element.textContent]);
+            element.innerText = uwuifyText(element.innerText) ;
+            element.classList.add("UwU");
         }
     }
 
-    setTimeout(() => {changeContent()}, 3 * 1000)
+    setTimeout(() => {changeContent()}, 3 * 1000);
 }
 
 function restoreContent() {
     for (let i = 0; i < textCache.length; ++i) {
         if (textCache[i][0].classList.contains("UwU")) {
-            textCache[i][0].textContent = textCache[i][1]
-            textCache[i][0].classList.remove("UwU")
+            textCache[i][0].textContent = textCache[i][1];
+            textCache[i][0].classList.remove("UwU");
         }
     }
 }

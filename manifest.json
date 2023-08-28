@@ -14,7 +14,14 @@
     },
     "content_scripts": [
         {
-            "js": ["scripts/translator.js"],
+            "js": ["scripts/translator.js",
+                   "scripts/image-changer.js"],
+            "matches": ["<all_urls>"]
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources":["images/*.png"],
             "matches": ["<all_urls>"]
         }
     ],
