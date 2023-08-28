@@ -12,3 +12,6 @@ as well as plaster cat photos over all visible images.
 
 ## Usage
 Click on the plugin to open its interface. Press the button at the bottom to toggle the plugin on and off.
+
+## Special Thanks
+Special thanks to @NoobCoderGrowing and @alishatromp for creating the first version of this chrome extension during UQCS hackathon 2023.
