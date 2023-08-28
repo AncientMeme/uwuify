@@ -15,7 +15,8 @@
     "content_scripts": [
         {
             "js": ["scripts/translator.js",
-                   "scripts/image-changer.js"],
+                   "scripts/image-changer.js",
+                   "scripts/emoticon.js"],
             "matches": ["<all_urls>"]
         }
     ],
