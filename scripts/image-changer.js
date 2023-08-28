@@ -108,28 +108,3 @@ function getModifySrcset(element, url) {
 
     return newSrcset;
 }
-
-// function changeImages() {
-//     console.log("change image owo")
-//     if (isActive) {
-//         for (image of imageCache) {
-//             if (!image[0].classList.contains("has-cat")) {
-//                 image[0].src = image[2]
-//                 image[0].srcset = image[2]
-//                 image[0].classList.add("has-cat")
-//             }
-//         }
-
-//         setTimeout(() => {changeImages()}, 3 * 1000)
-//     }
-// }
-
-// function restoreImages() {
-//     for (image of imageCache) {
-//         if (image[0].classList.contains("has-cat")) {
-//             image[0].src = image[1]
-//             image[0].srcset = image[1]
-//             image[0].classList.remove("has-cat")
-//         }
-//     }
-// }
