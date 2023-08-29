@@ -46,6 +46,11 @@ function containText(element) {
     if(style.display === 'none' || element.width <= 0 || element.height <= 0) {
         return false;
     }
+    // Ignore marked elements
+    if (element.classList.contains("uwu-ignore")) {
+        return false;
+    }
+
     // check if the element has a text node, if so, make sure it's not just whitespace.
     return Array.from(element.childNodes).find(node=>node.nodeType===3 && node.textContent.trim().length>1);
 }
