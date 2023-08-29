@@ -1,8 +1,10 @@
 const wave_radius = 5;
+const faces = ["(*´▽`*)", "⸜(｡˃ ᵕ ˂ )⸝♡", "o(*>ω<*)o", "( ˶ˆᗜˆ˵ )", "◝(ᵔᵕᵔ)◜"];
 
 /* Keep track of emoticon status */
 var isActive = true;
 var emoticons = [];
+var used_faces = []
 setupEmoticon();
 
 /* Get user settings */
@@ -22,8 +24,18 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 function setupEmoticon() {
-    createEmoticon(6, 12, 0, -10, "(*´▽`*)");
-    createEmoticon(78, 78, 180, 10, "⸜(｡˃ ᵕ ˂ )⸝♡");
+    createEmoticon(6, 10, 0, -10, randomEmoticon()); // top left
+    createEmoticon(78, 80, 180, 10, randomEmoticon()); // bottom right
+}
+
+
+function randomEmoticon() {
+    let index = -1;
+    while (index < 0 || used_faces.includes(index)) {
+        index = Math.floor(Math.random() * faces.length);
+    }
+    used_faces.push(index);
+    return faces[index];
 }
 
 function createEmoticon(left, top, angle, rotation, text) {
