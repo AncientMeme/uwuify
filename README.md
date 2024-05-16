@@ -1,6 +1,8 @@
-# Meow
+# Uwuify
 
-Meow is a chrome extension plugin that uwuify your webpages uwu.<br><br>
+Uwuify is a chrome extension plugin that uwuify your webpages uwu. This is a branch of the
+UQCS Hackathon project, [Meow](https://github.com/NoobCoderGrowing/Meow).
+
 It would scrape the DOM from each webpage and change the text into uwu speak,
 as well as plaster cat photos over all visible images.
 
@@ -14,4 +16,4 @@ as well as plaster cat photos over all visible images.
 Click on the plugin to open its interface. Press the button at the bottom to toggle the plugin on and off.
 
 ## Special Thanks
-Special thanks to @NoobCoderGrowing and @alishatromp for creating the first version of this chrome extension during UQCS hackathon 2023.
+Special thanks to [@NoobCoderGrowing](https://github.com/NoobCoderGrowing) and [@alishatromp](https://github.com/alishatromp) for creating the first version of this chrome extension during UQCS hackathon 2023.
